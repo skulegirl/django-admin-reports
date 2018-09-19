@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
+from django.utils.encoding import smart_text
 try:
     from django.db.models.query import QuerySet, ValuesQuerySet
 except ImportError:
@@ -309,10 +310,9 @@ class Report(object):
         if extra_rows is not None:
             writer.writerows(extra_rows)
         if header:
-            writer.writerow([name.encode(settings.DEFAULT_CHARSET) for name, _ in self.get_fields()])
+            writer.writerow([smart_text(name, settings.DEFAULT_CHARSET) for name, _ in self.get_fields()])
         for record in self.iter_results():
-            writer.writerow([elem.encode(settings.DEFAULT_CHARSET) if isinstance(elem, unicode) else elem
-                             for elem in record])
+            writer.writerow([smart_text(elem, settings.DEFAULT_CHARSET) for elem in record])
         if totals and self.get_has_totals():
             writer.writerow(self.totals)
 
